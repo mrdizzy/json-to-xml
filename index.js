@@ -1,4 +1,4 @@
-var xmlDecl = '<?xml version="1.0" encoding="UTF-8" ?>\n',
+var xmlDecl = '<?xml version="1.0" encoding="UTF-8" ?>',
     attr_prefix = '-'
 
 function writeXml(tree) {
@@ -37,14 +37,14 @@ function hashToXml(name, tree) {
         }
         else if (elem.length > 0) {
             if (jelem.match(/\n/)) {
-                jelem = "<" + name + jattr + ">\n" + jelem + "</" + name + ">\n";
+                jelem = "<" + name + jattr + ">\n" + jelem + "</" + name + ">"; // newline if spacing
             }
             else {
-                jelem = "<" + name + jattr + ">" + jelem + "</" + name + ">\n";
+                jelem = "<" + name + jattr + ">" + jelem + "</" + name + ">"; // newline if spacing
             }
         }
         else {
-            jelem = "<" + name + jattr + " />\n";
+            jelem = "<" + name + jattr + " />"; // newline if spacing
         }
         return jelem;
     };
@@ -75,7 +75,7 @@ function scalarToXml(name, text) {
             return escapeXml(text);
         }
         else {
-            return "<" + name + ">" + escapeXml(text) + "</" + name + ">\n";
+            return "<" + name + ">" + escapeXml(text) + "</" + name + ">"; // newline if spacing
         }
     };
 
