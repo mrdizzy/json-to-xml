@@ -1,0 +1,174 @@
+<!DOCTYPE html>  <html> <head>   <title>index.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="doc.html">                 doc.js               </a>                                           <a class="source" href="index.html">                 index.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               index.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h2>Example</h2>
+
+<p>Takes a JavaScript object and recursively converts it into XML.</p>
+
+<p><strong>Input:</strong></p>
+
+<pre><code>{
+    customers: {
+        customer: [{
+            "-name": "David Pettifer",
+            "-age": 32,
+            addresses: {
+                address: [{
+                    house_number: 22,
+                    street: "Brook Road",
+                    postcode: "PO37 7LU"
+                }, {
+                    house_number: 45,
+                    street: "Kents Hill Road",
+                    postcode: "SS7 5PJ"
+                }, {
+                    house_number: 30,
+                    street: "Melbourne Street",
+                    postcode: "PO30 1SP"
+                }]
+            }
+        }, {
+            "-name": "Valerie Sayce",
+            "-age": 45,
+            addresses: {
+                address: [{
+                    house_number: 34,
+                    street: "Albert Road",
+                    postcode: "PL3 2JQ"
+                }, {
+                    house_number: 113,
+                    street: "Winston Street",
+                    postcode: "SX3 9JB"
+                }]
+            }
+        }]
+    }
+}
+</code></pre>
+
+<p><strong>Output:</strong></p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;customers&gt;
+  &lt;customer name="David Pettifer" age="32"&gt;
+    &lt;addresses&gt;
+      &lt;address&gt;
+        &lt;house_number&gt;22&lt;/house_number&gt; 
+        &lt;street&gt;Brook Road&lt;/street&gt;
+        &lt;postcode&gt;PO37 7LU&lt;/postcode&gt;
+      &lt;/address&gt;
+      &lt;address&gt;
+        &lt;house_number&gt;45&lt;/house_number&gt;
+        &lt;street&gt;Kents Hill Road&lt;/street&gt;
+        &lt;postcode&gt;SS7 5PJ&lt;/postcode&gt;
+      &lt;/address&gt; 
+      &lt;address&gt;
+        &lt;house_number&gt;30&lt;/house_number&gt;
+       &lt;street&gt;Melbourne Street&lt;/street&gt;
+        &lt;postcode&gt;PO30 1SP&lt;/postcode&gt;
+      &lt;/address&gt;
+    &lt;/addresses&gt;
+  &lt;/customer&gt;
+  &lt;customer name="Valerie Sayce" age="45"&gt;
+    &lt;addresses&gt;
+      &lt;address&gt;
+        &lt;house_number&gt;34&lt;/house_number&gt;
+        &lt;street&gt;Albert Road&lt;/street&gt;
+        &lt;postcode&gt;PL3 2JQ&lt;/postcode&gt;
+      &lt;/address&gt;
+      &lt;address&gt;
+        &lt;house_number&gt;113&lt;/house_number&gt;
+        &lt;street&gt;Winston Street&lt;/street&gt;
+        &lt;postcode&gt;SX3 9JB&lt;/postcode&gt;
+      &lt;/address&gt;
+    &lt;/addresses&gt;
+  &lt;/customer&gt;
+&lt;/customers&gt;
+</code></pre>
+
+<ul>
+<li><code>xmlDecl</code>: Constant used for the xml declaration</li>
+<li><code>attr_prefix</code>: Constant used to prefix attributes</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>
+var xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>",
+    attr_prefix = '-'
+
+function writeXml(tree) {
+    var xml = hashToXml(null, tree);
+    return xmlDecl + xml;
+};</pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Takes a Javascript object and recursively iterates over its properties,
+ignoring any inherited properties, converting them into XML elements. </p>
+
+<ul>
+<li><code>name</code> is the</li>
+<li><code>tree</code> is an <em>object</em> whose keys will be the names of the element, and whose values will be the values of the element</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>function hashToXml(name, tree) {
+    var elem = [];
+    var attr = [];
+    for (var key in tree) {
+        if (!tree.hasOwnProperty(key)) continue;
+        var val = tree[key];</pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Check to see if the key begins with <code>attr_prefix</code> (which defaults to <code>-</code>), if it does then this key/value pair 
+should be an attribute on the XML element, e.g. <code>name="David"</code></p>             </td>             <td class="code">               <div class="highlight"><pre>        if (key.charAt(0) != attr_prefix) {</pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>If value is a null or undefined value, then we have a self-closing element, such as
+<code>&lt;br/&gt;</code></p>             </td>             <td class="code">               <div class="highlight"><pre>            if (typeof(val) == "undefined" || val == null) {
+                elem[elem.length] = "<" + key + " />";
+            }</pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Check to see if the value is an <code>Array</code>, if it is then we handle it with the
+<code>arrayToXml()</code> method, passing it the key and the array object</p>             </td>             <td class="code">               <div class="highlight"><pre>            else if (typeof(val) == "object" && val.constructor == Array) {
+                elem[elem.length] = arrayToXml(key, val);
+            }</pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Check to see if the value is an Object, if it is then we call <code>hashToXml()</code> recursively</p>             </td>             <td class="code">               <div class="highlight"><pre>            else if (typeof(val) == "object") {
+                elem[elem.length] = hashToXml(key, val);
+            }</pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Otherwise we have a standard key value pair, converting to <name>David</name></p>             </td>             <td class="code">               <div class="highlight"><pre>            else {
+                elem[elem.length] = scalarToXml(key, val);
+            }
+        }</pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Create attributes on an element, such as <code>name="David"</code></p>             </td>             <td class="code">               <div class="highlight"><pre>        else {
+            attr[attr.length] = " " + (key.substring(1)) + '="' + (escapeXml(val)) + '"';
+        }
+    }
+    var joinedAttrs = attr.join("");
+    var joinedElements = elem.join("");
+    if (typeof(name) == "undefined" || name == null) {
+
+    }
+    else if (elem.length > 0) {
+        if (joinedElements.match(/\n/)) {
+            joinedElements = "<" + name + joinedAttrs + ">" + joinedElements + "</" + name + ">";
+        }
+        else {
+            joinedElements = "<" + name + joinedAttrs + ">" + joinedElements + "</" + name + ">";
+        }
+    }
+    else {
+        joinedElements = "<" + name + joinedAttrs + " />";
+    }
+    return joinedElements;
+};</pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>This method takes an array and converts it into a series of XML elements</p>             </td>             <td class="code">               <div class="highlight"><pre>function arrayToXml(name, array) {
+    var out = [];
+    for (var i = 0; i < array.length; i++) {
+        var val = array[i];
+        if (typeof(val) == "undefined" || val == null) {
+            out[out.length] = "<" + name + " />";
+        }
+        else if (typeof(val) == "object" && val.constructor == Array) {
+            out[out.length] = arrayToXml(name, val);
+        }
+        else if (typeof(val) == "object") {
+            out[out.length] = hashToXml(name, val);
+        }
+        else {
+            out[out.length] = scalarToXml(name, val);
+        }
+    }
+    return out.join("");
+};
+
+function scalarToXml(name, text) {
+    if (name == "#text") {
+        return escapeXml(text);
+    }
+    else {
+        return "<" + name + ">" + escapeXml(text) + "</" + name + ">";
+    }
+};
+
+function escapeXml(text) {
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
+
+module.exports = writeXml;
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
